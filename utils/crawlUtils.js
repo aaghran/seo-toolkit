@@ -1,4 +1,4 @@
-collectInternalLinks = ($, domain, foundPages) => {
+collectInternalLinks = ($, domain, foundPages, crawledPagesData, url) => {
   return new Promise((resolve) => {
     const elements =
       "a[href^='http://" +
@@ -16,6 +16,7 @@ collectInternalLinks = ($, domain, foundPages) => {
       "a[href^='/']:not(a[href^='mailto'])";
 
     const relativeLinks = $(elements);
+    let internalLinks = []
 
     relativeLinks.each(function (i, e) {
       let href = $(this).attr("href");
@@ -26,14 +27,21 @@ collectInternalLinks = ($, domain, foundPages) => {
       if (href.indexOf("http") === 0) {
         href = href.substr(href.indexOf("://") + 3, href.length);
       } else if (href.indexOf("/") === 0) {
-        href = domain + href;
+          if (!href.includes(domain)) 
+            href = domain + href;
       }
       // only add the href to the foundPages if it's not there yet.
       if (foundPages.indexOf(href) === -1 && href.includes(domain)) {
         // console.log(href);
         foundPages.push(href);
+        internalLinks.push(href);
       }
     });
+
+    let obj = crawledPagesData.find((x) => x.url == url);
+    let index = crawledPagesData.indexOf(obj);
+    crawledPagesData[index]["internalLinks"] = internalLinks;
+    console.log(crawledPagesData[index]);
 
     resolve(foundPages);
   });

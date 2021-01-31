@@ -2,7 +2,7 @@ const cheerio = require("cheerio");
 const request = require("request");
 const fs = require("fs");
 var url = require("url");
-const { autoScroll, checkMeta, scrape } = require("./utils/scrapeUtils");
+const { checkMeta, scrape } = require("./utils/scrapeUtils");
 const { collectInternalLinks } = require("./utils/crawlUtils");
 
 const crawledPages = [];
@@ -69,7 +69,7 @@ visitPage = async (url, callback) => {
     checkMeta($, url, crawledPagesData);
 
     // collect all links
-    collectInternalLinks($, domain, foundPages).then((newFoundPages) => {
+    collectInternalLinks($, domain, foundPages, crawledPagesData, url).then((newFoundPages) => {
       foundPages = newFoundPages;
       callback();
     });

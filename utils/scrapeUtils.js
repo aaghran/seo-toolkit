@@ -22,11 +22,13 @@ scrape = async (url, crawledPagesData) => {
   console.log("page loaded");
   await autoScroll(page);
 
-  const titles = await page.$$eval("h1", (elements) => {
+  const pageMetrics = await page.metrics();
+
+  const h1 = await page.$$eval("h1", (elements) => {
     return elements.map((item) => item.textContent);
   });
 
-  const subtitles = await page.$$eval("h2", (elements) => {
+  const h2 = await page.$$eval("h2", (elements) => {
     return elements.map((item) => item.textContent);
   });
 
@@ -37,23 +39,28 @@ scrape = async (url, crawledPagesData) => {
     }));
   });
 
-  await page.screenshot({
-    fullPage: true,
-    path: `./images/${url.replaceAll("/", "_")}.png`,
-  });
+
+
+//   await page.screenshot({
+//     fullPage: true,
+//     path: `./images/${url.replaceAll("/", "_")}.png`,
+//   });
 
   //   console.log(titles);
   console.log("seo");
 
   let obj = crawledPagesData.find((x) => x.url == url);
   let index = crawledPagesData.indexOf(obj);
-  crawledPagesData[index]["h1"] = titles;
-  crawledPagesData[index]["h2"] = subtitles;
+  crawledPagesData[index]["h1"] = h1;
+  crawledPagesData[index]["h2"] = h2;
   crawledPagesData[index]["images"] = images;
+  crawledPagesData[index]["pageMetrics"] = pageMetrics;
   console.log(crawledPagesData[index]);
 
   
   await browser.close();
+
+  return;
 };
 
 
