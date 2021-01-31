@@ -7,3 +7,6 @@ H1
 H2
 images and alt
 Links
+
+How to run?
+node . {domain)
