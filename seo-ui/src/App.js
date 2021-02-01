@@ -5,8 +5,7 @@ import { Jumbotron } from "reactstrap";
 import BootstrapTable from "react-bootstrap-table-next";
 import filterFactory, { textFilter } from "react-bootstrap-table2-filter";
 import "bootstrap/dist/css/bootstrap.css";
-import "./scss/nextjs-argon-dashboard.scss";
-import "./App.css";
+import "./scss/index.scss";
 
 function h1Formatter(cell, row) {
   console.log(row);
@@ -52,6 +51,7 @@ const App = (props) => {
       dataField: "url",
       text: "URL",
       formatter: titleFormatter,
+      sort: true
     },
     {
       dataField: "metatags",
@@ -59,6 +59,7 @@ const App = (props) => {
       formatter: (value, row, rowIndex) => (
         <span>{row.internalLinks && row.metatags.length}</span>
       ),
+      sort: true
     },
     {
       dataField: "internalLinks",
@@ -66,6 +67,7 @@ const App = (props) => {
       formatter: (value, row, rowIndex) => (
         <span>{row.internalLinks && row.internalLinks.length}</span>
       ),
+      sort: true
     },
     {
       dataField: "images",
@@ -73,6 +75,7 @@ const App = (props) => {
       formatter: (value, row, rowIndex) => (
         <span>{row.seo && row.seo.images && row.seo.images.length}</span>
       ),
+      sort: true
     },
     {
       dataField: "pageMetrics",
@@ -80,6 +83,7 @@ const App = (props) => {
       formatter: (value, row, rowIndex) => (
         <span>{row.pageMetrics && row.pageMetrics.TaskDuration}</span>
       ),
+      sort: true
     },
     {
       dataField: "h1",
@@ -102,7 +106,7 @@ const App = (props) => {
           <Button color="primary">Learn More</Button>
         </p> */}
       </Jumbotron>
-      <Container>
+      <Container fluid>
         <Row>
           <Col sm="12">
             <h1>Wandering Bong</h1>
@@ -110,8 +114,12 @@ const App = (props) => {
           <Col sm="12">
             <BootstrapTable
               keyField="id"
+              className="results"
               data={websiteData.data}
               columns={columns}
+              striped
+              hover
+              condensed
             />
           </Col>
         </Row>
