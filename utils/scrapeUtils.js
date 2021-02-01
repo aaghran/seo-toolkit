@@ -24,6 +24,10 @@ scrape = async (url, crawledPagesData) => {
 
   const pageMetrics = await page.metrics();
 
+  const title = await page.$$eval("title", (elements) => {
+    return elements.map((item) => item.textContent);
+  });
+
   const h1 = await page.$$eval("h1", (elements) => {
     return elements.map((item) => item.textContent);
   });
@@ -39,30 +43,30 @@ scrape = async (url, crawledPagesData) => {
     }));
   });
 
-
-
-//   await page.screenshot({
-//     fullPage: true,
-//     path: `./images/${url.replaceAll("/", "_")}.png`,
-//   });
+  //   await page.screenshot({
+  //     fullPage: true,
+  //     path: `./images/${url.replaceAll("/", "_")}.png`,
+  //   });
 
   //   console.log(titles);
   console.log("seo");
 
   let obj = crawledPagesData.find((x) => x.url == url);
   let index = crawledPagesData.indexOf(obj);
-  crawledPagesData[index]["h1"] = h1;
-  crawledPagesData[index]["h2"] = h2;
-  crawledPagesData[index]["images"] = images;
+  let seoObject = {
+    h1,
+    h2,
+    title,
+    images,
+  };
+  crawledPagesData[index]["seo"] = seoObject;
   crawledPagesData[index]["pageMetrics"] = pageMetrics;
   console.log(crawledPagesData[index]);
 
-  
   await browser.close();
 
   return;
 };
-
 
 //Scroll page https://stackoverflow.com/questions/51529332/puppeteer-scroll-down-until-you-cant-anymore
 async function autoScroll(page) {
@@ -89,7 +93,7 @@ checkMeta = ($, url, crawledPagesData) => {
   var meta = $("meta");
   var keys = Object.keys(meta);
   var metatags = [];
-
+  console.log(metatags);
   keys.forEach(function (key) {
     if (meta[key].attribs && meta[key].attribs.property) {
       metatags.push({
