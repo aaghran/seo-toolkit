@@ -26,18 +26,23 @@ function h2Formatter(cell, row) {
 }
 
 function titleFormatter(cell, row) {
-  console.log(row);
-  return (
-    row.seo &&
-    row.seo.title &&
-    row.seo.title.map((page, i) => (
+  let title = (
+    <p>
+      <a href={`//${row.url.replace("//","")}`} target="blank">
+        {row.url.replace("//","")}
+      </a>
+    </p>
+  );
+  if (row.seo && row.seo.title) {
+    title = row.seo.title.map((page, i) => (
       <p>
         <a href={`//${row.url}`} target="blank">
           {page}
         </a>
       </p>
-    ))
-  );
+    ));
+  }
+  return title;
 }
 
 const websiteData = require("./urls_wanderingbong.com.json");
@@ -51,23 +56,23 @@ const App = (props) => {
       dataField: "url",
       text: "URL",
       formatter: titleFormatter,
-      sort: true
+      sort: true,
     },
     {
       dataField: "metatags",
-      text: "metatags",
+      text: "meta",
       formatter: (value, row, rowIndex) => (
         <span>{row.internalLinks && row.metatags.length}</span>
       ),
-      sort: true
+      sort: true,
     },
     {
       dataField: "internalLinks",
-      text: "internalLinks",
+      text: "links",
       formatter: (value, row, rowIndex) => (
         <span>{row.internalLinks && row.internalLinks.length}</span>
       ),
-      sort: true
+      sort: true,
     },
     {
       dataField: "images",
@@ -75,15 +80,15 @@ const App = (props) => {
       formatter: (value, row, rowIndex) => (
         <span>{row.seo && row.seo.images && row.seo.images.length}</span>
       ),
-      sort: true
+      sort: true,
     },
     {
       dataField: "pageMetrics",
-      text: "pageMetrics",
+      text: "metrics",
       formatter: (value, row, rowIndex) => (
         <span>{row.pageMetrics && row.pageMetrics.TaskDuration}</span>
       ),
-      sort: true
+      sort: true,
     },
     {
       dataField: "h1",
