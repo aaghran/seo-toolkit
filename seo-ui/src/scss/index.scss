@@ -1,5 +1,20 @@
 @import "scss/paper-dashboard.scss";
-.results {
-    text-align: left;
-    width: 100%;
+body {
+  background-color: #0d1117;
+  color: #fff;
+}
+.jumbotron {
+  background-color: #1b2431;
+  color: #fff;
+}
+.react-bootstrap-table {
+  text-align: left;
+  width: 100%;
+  td,
+  th {
+    color: #fff;
+  }
+  .table-hover > tbody > tr:hover {
+    background-color: #161b22;
+  }
 }

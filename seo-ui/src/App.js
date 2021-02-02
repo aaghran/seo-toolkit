@@ -28,7 +28,7 @@ function h2Formatter(cell, row) {
 function titleFormatter(cell, row) {
   let title = (
     <p>
-      <a href={`//${row.url.replace("//","")}`} target="blank">
+      <a href={`//${row.url.replace("//","")}`} target="blank" className="text-danger">
         {row.url.replace("//","")}
       </a>
     </p>
@@ -36,7 +36,7 @@ function titleFormatter(cell, row) {
   if (row.seo && row.seo.title) {
     title = row.seo.title.map((page, i) => (
       <p>
-        <a href={`//${row.url}`} target="blank">
+        <a href={`//${row.url}`} target="blank" className="text-success">
           {page}
         </a>
       </p>
@@ -114,7 +114,12 @@ const App = (props) => {
       <Container fluid>
         <Row>
           <Col sm="12">
-            <h1>Wandering Bong</h1>
+            <h2>Wandering Bong</h2>
+            <Button color="danger" outline>Sitemap</Button>
+            <Button color="success" outline>Export</Button>
+          </Col>
+          <Col sm="12">
+            <h3>All URLs</h3>
           </Col>
           <Col sm="12">
             <BootstrapTable
