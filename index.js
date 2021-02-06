@@ -1,9 +1,14 @@
-const cheerio = require("cheerio");
 const request = require("request");
+const pino = require("pino");
+const cheerio = require("cheerio");
+const open = require("open");
+const puppeteer = require("puppeteer");
 const fs = require("fs");
-var url = require("url");
+
 const { checkMeta, scrape } = require("./utils/scrapeUtils");
 const { collectInternalLinks } = require("./utils/crawlUtils");
+
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
 const crawledPages = [];
 const crawledPagesData = [];
@@ -11,6 +16,20 @@ let foundPages = [];
 let index = 0;
 
 const domain = process.argv[2];
+
+let browser;
+
+initializeBrowser = async () => {
+  browser = await puppeteer.launch({
+    headless: false,
+    // slows down Puppeteer operations
+    slowMo: 100,
+    // open dev tools
+    //   devtools: true,
+  });
+
+  await crawl();
+};
 
 crawl = async () => {
   // if it's the first start
@@ -23,12 +42,13 @@ crawl = async () => {
   if (foundPages === crawledPages || !pageToCrawl) {
     // stop
     fs.writeFileSync(
-      "urls_" + domain + ".json",
+      "./seo-ui/src/urls_" + domain + ".json",
       JSON.stringify({ data: crawledPagesData }),
       function (err) {
         if (err) throw err;
       }
     );
+    open("http://localhost:3000/");
     process.exit();
   }
 
@@ -57,7 +77,7 @@ visitPage = async (url, callback) => {
   });
 
   // Make the request
-  request("https://" + url, function (error, response, body) {
+  request("http://" + url, function (error, response, body) {
     // Check status code (200 is HTTP OK)
     if (!response || response.statusCode !== 200) {
       process.nextTick(callback);
@@ -69,17 +89,19 @@ visitPage = async (url, callback) => {
     checkMeta($, url, crawledPagesData);
 
     // collect all links
-    collectInternalLinks($, domain, foundPages, crawledPagesData, url).then((newFoundPages) => {
-      foundPages = newFoundPages;
-      callback();
-    });
+    collectInternalLinks($, domain, foundPages, crawledPagesData, url).then(
+      (newFoundPages) => {
+        foundPages = newFoundPages;
+        callback();
+      }
+    );
   });
 
   try {
-    await scrape(url, crawledPagesData);
+    await scrape(url, crawledPagesData, browser);
   } catch (e) {
-    console.log("scrape failed ", url);
-    console.log(e);
+    logger.error("scrape failed ", url);
+    logger.error(e);
     let obj = crawledPagesData.find((x) => x.url == url);
     if (!obj) {
       crawledPagesData.push({
@@ -92,7 +114,7 @@ visitPage = async (url, callback) => {
   }
 
   fs.writeFileSync(
-    "urls_" + domain + ".json",
+    "./seo-ui/src/urls_" + domain + ".json",
     JSON.stringify({ data: crawledPagesData }),
     function (err) {
       if (err) throw err;
@@ -100,4 +122,4 @@ visitPage = async (url, callback) => {
   );
 };
 
-crawl();
+initializeBrowser();

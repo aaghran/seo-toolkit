@@ -1,25 +1,20 @@
-const puppeteer = require("puppeteer");
+const pino = require("pino");
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 
-scrape = async (url, crawledPagesData) => {
-  const browser = await puppeteer.launch({
-    headless: true,
-    // slows down Puppeteer operations
-    slowMo: 100,
-    // open dev tools
-    //   devtools: true,
-  });
-  console.log(url);
-  console.log("browser launched");
+scrape = async (url, crawledPagesData, browser) => {
+  logger.info(url);
+  logger.info("page launched: ", url);
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   try {
     await page.goto(`https://${url}/`);
   } catch {
+    logger.error("error goto", url)
     return;
   }
 
   //   await page.waitForSelector("h1");
-  console.log("page loaded");
+  logger.info("page loaded");
   await autoScroll(page);
 
   const pageMetrics = await page.metrics();
@@ -43,13 +38,12 @@ scrape = async (url, crawledPagesData) => {
     }));
   });
 
-  //   await page.screenshot({
-  //     fullPage: true,
-  //     path: `./images/${url.replaceAll("/", "_")}.png`,
-  //   });
+  await page.screenshot({
+    fullPage: true,
+    path: `./images/${url.replaceAll("/", "_")}.png`,
+  });
 
-  //   console.log(titles);
-  console.log("seo");
+  logger.info("seo");
 
   let obj = crawledPagesData.find((x) => x.url == url);
   let index = crawledPagesData.indexOf(obj);
@@ -61,7 +55,7 @@ scrape = async (url, crawledPagesData) => {
   };
   crawledPagesData[index]["seo"] = seoObject;
   crawledPagesData[index]["pageMetrics"] = pageMetrics;
-  console.log(crawledPagesData[index]);
+  // logger(crawledPagesData[index]);
 
   await browser.close();
 
@@ -93,7 +87,7 @@ checkMeta = ($, url, crawledPagesData) => {
   var meta = $("meta");
   var keys = Object.keys(meta);
   var metatags = [];
-  console.log(metatags);
+  // logger(metatags);
   keys.forEach(function (key) {
     if (meta[key].attribs && meta[key].attribs.property) {
       metatags.push({
@@ -103,12 +97,12 @@ checkMeta = ($, url, crawledPagesData) => {
     }
   });
 
-  console.log("metatags");
+  logger.info("metatags");
 
   let obj = crawledPagesData.find((x) => x.url == url);
   let index = crawledPagesData.indexOf(obj);
   crawledPagesData[index]["metatags"] = metatags;
-  console.log(crawledPagesData[index]);
+  // logger(crawledPagesData[index]);
 };
 
 module.exports = {

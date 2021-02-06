@@ -17,7 +17,6 @@ function h1Formatter(cell, row) {
 }
 
 function h2Formatter(cell, row) {
-  console.log(row);
   return (
     row.seo &&
     row.seo.h2 &&
@@ -25,11 +24,22 @@ function h2Formatter(cell, row) {
   );
 }
 
+function metaFormatter(cell, row) {
+  return (
+    row.metatags &&
+    row.metatags.map((tag, i) => <li>{`${tag.meta} : ${tag.content}`}</li>)
+  );
+}
+
 function titleFormatter(cell, row) {
   let title = (
     <p>
-      <a href={`//${row.url.replace("//","")}`} target="blank" className="text-danger">
-        {row.url.replace("//","")}
+      <a
+        href={`//${row.url.replace("//", "")}`}
+        target="blank"
+        className="text-danger"
+      >
+        {row.url.replace("//", "")}
       </a>
     </p>
   );
@@ -61,9 +71,7 @@ const App = (props) => {
     {
       dataField: "metatags",
       text: "meta",
-      formatter: (value, row, rowIndex) => (
-        <span>{row.internalLinks && row.metatags.length}</span>
-      ),
+      formatter: metaFormatter,
       sort: true,
     },
     {
@@ -107,16 +115,19 @@ const App = (props) => {
       <Jumbotron>
         <h1 className="display-3">SEO audit tool!</h1>
         <p className="lead">Check all links and track performance</p>
-        {/* <p className="lead">
-          <Button color="primary">Learn More</Button>
-        </p> */}
       </Jumbotron>
       <Container fluid>
         <Row>
-          <Col sm="12">
+          <Col sm="10">
             <h2>Wandering Bong</h2>
-            <Button color="danger" outline>Sitemap</Button>
-            <Button color="success" outline>Export</Button>
+          </Col>
+          <Col sm="2">
+            <Button color="danger" outline>
+              Sitemap
+            </Button>
+            <Button color="success" outline>
+              Export
+            </Button>
           </Col>
           <Col sm="12">
             <h3>All URLs</h3>

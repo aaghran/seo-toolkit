@@ -1,3 +1,6 @@
+const pino = require("pino");
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+
 collectInternalLinks = ($, domain, foundPages, crawledPagesData, url) => {
   return new Promise((resolve) => {
     const elements =
@@ -32,7 +35,7 @@ collectInternalLinks = ($, domain, foundPages, crawledPagesData, url) => {
       }
       // only add the href to the foundPages if it's not there yet.
       if (foundPages.indexOf(href) === -1 && href.includes(domain)) {
-        // console.log(href);
+        // logger.info(href);
         foundPages.push(href);
         internalLinks.push(href);
       }
@@ -41,7 +44,7 @@ collectInternalLinks = ($, domain, foundPages, crawledPagesData, url) => {
     let obj = crawledPagesData.find((x) => x.url == url);
     let index = crawledPagesData.indexOf(obj);
     crawledPagesData[index]["internalLinks"] = internalLinks;
-    console.log(crawledPagesData[index]);
+    // logger.info(crawledPagesData[index]);
 
     resolve(foundPages);
   });
